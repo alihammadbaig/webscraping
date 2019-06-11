@@ -62,8 +62,7 @@ The spider lands on https://joboutlook.gov.au/Industry.aspx (start_urls object
 
 You can see code behind the web page by right clicking the page and selecting Inspect in Chrome.
 
-
-
+![alt text](https://github.com/alihammadbaig/webscraping/blob/master/image.png)
 
 The Code
 Below is the code for our first Spider. Save it in a file named JobInfo.py under the myproject/spiders directory in your project.
