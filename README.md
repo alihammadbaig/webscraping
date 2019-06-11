@@ -1,36 +1,32 @@
 This repo contains two Scrapy Spiders used to scrap joboutlook website for jobs related information.
 
-More details over here https://nswdac.atlassian.net/wiki/spaces/TEC/pages/612171797/Web+Scraping+Using+Python+and+Scrapy
-
-This page is to help you get started with scraping the information from a website. The framework used for this purpose is Scrapy. 
-
 Web scraping, web harvesting, or web data extraction is data scraping used for extracting data from websites. I am using Scrapy for this purpose. Scrapy is an open source and collaborative framework for extracting the data you need from websites.
 
 If you are thinking of Scraping a website, this page will help you understand the how Scrapy works from a beginner to an advance level. You won't need any other source after this - promise 
 
 Here is what we will learn
 
-Installing Anaconda on your local machine - Its not mandatory, but if you're afraid of configuring environment variable, then this is highly recommended. 
-Installing Scrappy
-Creating a scrappy project
-Running a scrappy project - in scrappy specific terminology we will learn how to crawl the website with Spider 
-Store the output in files (I will store it in JSON file, we can easily use the same method to store output in XML, CSV and a few other formats)
-We will scrape this website https://joboutlook.gov.au/Industry.aspx. We will not only read information from this page, but hit subsequent links on this page and read information from the other pages in the same program as well.
-Step-by-step guide
-First thing first - Download Anaconda for windows with Python 3.* version from here https://repo.anaconda.com/archive/Anaconda3-5.2.0-Windows-x86_64.exe
-Install Anaconda - Just double click the .exe and follow the steps, its very simple standard installation. This guide might also be helpful https://medium.com/@GalarnykMichael/install-python-on-windows-anaconda-c63c7c3d1444. Anaconda provides Python and R along with several libraries, RStudio, Spyder IDE, Jupyter notebook and several other tools out of box.
+* Installing Anaconda on your local machine - Its not mandatory, but if you're afraid of configuring environment variable, then this is highly recommended. 
+* Installing Scrappy
+* Creating a scrappy project
+* Running a scrappy project - in scrappy specific terminology we will learn how to crawl the website with Spider 
+* Store the output in files (I will store it in JSON file, we can easily use the same method to store output in XML, CSV and a few other formats)
+* We will scrape this website https://joboutlook.gov.au/Industry.aspx. We will not only read information from this page, but hit subsequent links on this page and read information from the other pages in the same program as well.
+# Step-by-step guide
+First thing first - **Download Anaconda** for windows with Python 3.* version from here https://repo.anaconda.com/archive/Anaconda3-5.2.0-Windows-x86_64.exe
+**Install Anaconda**  - Just double click the .exe and follow the steps, its very simple standard installation. This guide might also be helpful https://medium.com/@GalarnykMichael/install-python-on-windows-anaconda-c63c7c3d1444. Anaconda provides Python and R along with several libraries, RStudio, Spyder IDE, Jupyter notebook and several other tools out of box.
 
-Install Scrapy - Open Anaconda prompt by going to Windows start button > All Programs > Anaconda > Anaconda Prompt and run the following command 
+**Install Scrapy**  - Open Anaconda prompt by going to Windows start button > All Programs > Anaconda > Anaconda Prompt and run the following command 
 
 conda install -c conda-forge scrapy
 Detailed documentation over here. 
 
-Scrapy Shell - Scrappy comes with an interactive shell where you can try and debug code. Run Anaconda Prompt, type scarpy and press enter. Then type the following command 
+**Scrapy Shell** - Scrappy comes with an interactive shell where you can try and debug code. Run Anaconda Prompt, type scarpy and press enter. Then type the following command 
 
-scrapy shell https://scrapy.org
+**scrapy shell** https://scrapy.org
 I would highly recommend to get used to shell before going any further. This one page document will be enough to know the workings of Scrapy shell https://doc.scrapy.org/en/latest/topics/shell.html
 
-Build a new project - On the Anaconda prompt run the following command
+**Build a new project** - On the Anaconda prompt run the following command
 
 scrapy startproject myproject
 
@@ -57,18 +53,20 @@ tutorial/
 Before going any further, I recommend to at least read the section Our first Spider of this tutorial 
 Lets create a "Spider" that "Crawls" the web.
 Spiders are classes that you define and that Scrapy uses to scrape information from a website (or a group of websites). They must subclass scrapy.Spider and define the initial requests to make, optionally how to follow links in the pages, and how to parse the downloaded page content to extract data.
-Summary of what the code does
+
+**Summary of what the code does**
 The spider lands on https://joboutlook.gov.au/Industry.aspx (start_urls object in code). This is the first request made by the Spider. Spider method parse is called automatically by Scrapy which is in charge of processing the response and returning scraped data and/or more URLs to follow. In the following code parse method reads href attribute of HTML anchor tags that are inside and h2 heading (see the image below). Each HTML element can be accessed with two functions of response object, css or xpath, I prefer css.
 
-You can see code behind the web page by right clicking the page and selecting Inspect in Chrome.
+*You can see code behind the web page by right clicking the page and selecting Inspect in Chrome.*
 
 ![alt text](https://github.com/alihammadbaig/webscraping/blob/master/image.png)
 
 The Code
-Below is the code for our first Spider. Save it in a file named JobInfo.py under the myproject/spiders directory in your project.
+Below is the code for our first Spider. Save it in a file named JobInfo.py under the myproject/spiders directory in your project.
 
 The parse method loops over each heading(see image 1 above), gets the URL and creates a new request to that page. A separate method parse_industry_profiles parses the response returned from this new request. Similarly, this parse functions also loops over each section on this page(see image 2 above), gets the URL and makes a request to that page. The response of this call is handle by another parse function parse_profile_details, which returns the information mentioned in image 3 above.
 
+```python
 import scrapy
 
 
@@ -117,21 +115,21 @@ class JobinfoSpider(scrapy.Spider):
             'female_share': fast_facts[6].extract().strip(),
             'full_time': fast_facts[7].extract().strip(),
         }
-
+```
 
 The following command executes the project and stores the returned data in JSON format in a single file
-
+```python
 scrapy crawl jobdetails -o jobdetails.json
+```
 
-
-More Generic Approach
+**More Generic Approach**
 The code below does the exact same thing as the previously explained code does, the only difference is we are using Items class to store the information. This is a more generic and preferable approach. Read more about Items class here. 
 
 Lets create an Items class in existing project file items.py
 
+```python
 import scrapy
 from scrapy.item import Item, Field
-
 
 class JoboutlookItem(scrapy.Item):
     main_page_url = Field()
@@ -148,15 +146,14 @@ class JoboutlookItem(scrapy.Item):
     male_share = Field()
     female_share = Field()
     full_time = Field()
-
+```
 Lets create a Spider that uses the JoboutlookItem class to store and transfer data.
 
+```python
 import scrapy
 from joboutlook.items import JoboutlookItem
 
-
 class JobinfoSpider(scrapy.Spider):
-
     name = 'jobinfo'
     allowed_domains = ['joboutlook.gov.au']
     start_urls = ['https://joboutlook.gov.au/Industry.aspx']
@@ -210,9 +207,11 @@ class JobinfoSpider(scrapy.Spider):
         item['full_time'] = fast_facts[7].extract().strip()
 
         yield item
-
+```
 
 Execute the project
 
+```python
 scrapy crawl jobinfo -o jobinfo.json
+```
 
